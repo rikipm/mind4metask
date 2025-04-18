@@ -1,0 +1,7 @@
+.env
+compose.yaml
+/.fleet
+/.idea
+/.nova
+/.vscode
+/.zed

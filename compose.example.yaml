@@ -1,0 +1,33 @@
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
+    volumes:
+      - ./src:/src
+    ports:
+      - "80:80"
+  php:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+      args:
+        UID: "1000"
+        GID: "1000"
+    working_dir: "/src"
+    volumes:
+      - ./src:/src
+  postgres:
+    build:
+      context: .
+      dockerfile: docker/postgres/Dockerfile
+    volumes:
+      - database:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD:
+    ports:
+      - "5432:5432"
+
+volumes:
+  database:
+    driver: local
