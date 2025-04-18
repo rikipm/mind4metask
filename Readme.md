@@ -14,3 +14,10 @@
 6. `docker compose up`
 7. `docker compose exec php php artisan key:generate`
 8. `docker compose exec php php artisan migrate`
+
+# Запуск тестов
+
+`docker compose exec php php artisan test`
+
+Тесты запускаются на боевой базе! В реальном проекте я разумеется так бы не делал, но создавать отдельную тестовую БД
+для тестового задания - это перебор.
