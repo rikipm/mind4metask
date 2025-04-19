@@ -1,0 +1,120 @@
+{
+  "info": {
+    "_postman_id": "a48530d3-67ca-41bb-80d2-7164342b9871",
+    "name": "mind4meTask",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Weather",
+      "protocolProfileBehavior": {
+        "disabledSystemHeaders": {}
+      },
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Accept",
+            "value": "applcation/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"latitude\": 50,\n    \"longitude\": 20,\n    \"date\": \"02-02-2025\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/api/weather",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "weather"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delivery Slots",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true,
+        "disabledSystemHeaders": {
+          "accept": true
+        }
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "applcation/json",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Accept-Language",
+            "value": "ru-RU",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"datetime\": \"2025-05-06 15:00:00\",\n    \"city\": \"CITY_1\"\n}"
+        },
+        "url": {
+          "raw": "{{url}}/api/delivery-slots",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "delivery-slots"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "url",
+      "value": "localhost"
+    }
+  ]
+}
