@@ -36,7 +36,7 @@ class DeliverySlotsService
 
         for ($i = 1; $i <= 21; $i++) {
             $currentDate = $datetime->addDays($i);
-            $currentDayOfWeek = $currentDate->dayOfWeekIso;
+            $currentDayOfWeek = $currentDate->dayOfWeek;
 
             if ($i === 1 && in_array($currentDayOfWeek, $daysThatMustBeSkippedIfTimeAfter)) {
                 if ($this->isAfterTime($currentDate, $timeThreshold)) {
