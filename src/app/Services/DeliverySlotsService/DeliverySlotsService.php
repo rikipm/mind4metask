@@ -25,11 +25,11 @@ class DeliverySlotsService
         if ($city === CityEnum::CITY_1 or $city === CityEnum::CITY_2) {
             $allowedDays = [Carbon::MONDAY, Carbon::WEDNESDAY, Carbon::FRIDAY];
             $timeThreshold = CarbonImmutable::createFromTime(16, 00);
-            $skipNextDayIfTimeAfter = $allowedDays;
+            $daysThatMustBeSkippedIfTimeAfter = $allowedDays;
         } elseif ($city === CityEnum::CITY_3) {
             $allowedDays = [Carbon::TUESDAY, Carbon::THURSDAY, Carbon::SATURDAY];
             $timeThreshold = CarbonImmutable::createFromTime(22, 00);
-            $skipNextDayIfTimeAfter = $allowedDays;
+            $daysThatMustBeSkippedIfTimeAfter = $allowedDays;
         } else {
             throw new CityWithUndefinedScenarioException();
         }
@@ -38,7 +38,7 @@ class DeliverySlotsService
             $currentDate = $datetime->addDays($i);
             $currentDayOfWeek = $currentDate->dayOfWeekIso;
 
-            if ($i === 1 && in_array($currentDayOfWeek, $skipNextDayIfTimeAfter)) {
+            if ($i === 1 && in_array($currentDayOfWeek, $daysThatMustBeSkippedIfTimeAfter)) {
                 if ($this->isAfterTime($currentDate, $timeThreshold)) {
                     continue;
                 }
