@@ -19,6 +19,7 @@ class DeliverySlotsService
 
     public function getDeliverySlots(CarbonImmutable $datetime, CityEnum $city): DeliverySlotsCollection
     {
+        /** @var DeliverySlot $availableSlots */
         $availableSlots = [];
 
         if ($city === CityEnum::CITY_1 or $city === CityEnum::CITY_2) {
