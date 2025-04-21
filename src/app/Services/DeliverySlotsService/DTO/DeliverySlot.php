@@ -2,7 +2,7 @@
 
 namespace App\Services\DeliverySlotsService\DTO;
 
-use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Illuminate\Support\Str;
 
 class DeliverySlot
@@ -14,7 +14,7 @@ class DeliverySlot
     ) {
     }
 
-    public static function fromCarbon(Carbon $datetime): self
+    public static function fromCarbon(CarbonImmutable $datetime): self
     {
         return new self(
             $datetime->format('d.m.Y'),

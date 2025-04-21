@@ -6,6 +6,7 @@ use App\Enums\CityEnum;
 use App\Services\DeliverySlotsService\DTO\DeliverySlot;
 use App\Services\DeliverySlotsService\DTO\DeliverySlotsCollection;
 use App\Services\DeliverySlotsService\Exceptions\CityWithUndefinedScenarioException;
+use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 
 class DeliverySlotsService
@@ -18,68 +19,42 @@ class DeliverySlotsService
 
     public function getDeliverySlots(CarbonImmutable $datetime, CityEnum $city): DeliverySlotsCollection
     {
-        $deliverySlots = [];
-        $counter = $datetime->toMutable();
+        $availableSlots = [];
 
-        if (in_array($city, [CityEnum::CITY_1, CityEnum::CITY_2])) {
-            for ($i = 1; $i <= 21; $i++) {
-                $counter->addDay();
-                if ($this->isHoliday($counter->toImmutable())) {
-                    continue;
-                }
-
-                if ($i === 1 and $this->isAfterTime($datetime, 16, 00) and in_array(
-                        $datetime->addDay()->dayOfWeek,
-                        [
-                            CarbonImmutable::MONDAY,
-                            CarbonImmutable::WEDNESDAY,
-                            CarbonImmutable::FRIDAY,
-                        ]
-                    )) {
-                    continue;
-                }
-
-                if (!in_array($counter->dayOfWeek, [
-                    CarbonImmutable::MONDAY,
-                    CarbonImmutable::WEDNESDAY,
-                    CarbonImmutable::FRIDAY,
-                ])) {
-                    continue;
-                }
-                $deliverySlots[] = DeliverySlot::fromCarbon($counter);
-            }
+        if ($city === CityEnum::CITY_1 or $city === CityEnum::CITY_2) {
+            $allowedDays = [Carbon::MONDAY, Carbon::WEDNESDAY, Carbon::FRIDAY];
+            $timeThreshold = CarbonImmutable::createFromTime(16, 00);
+            $skipNextDayIfTimeAfter = $allowedDays;
         } elseif ($city === CityEnum::CITY_3) {
-            for ($i = 1; $i <= 21; $i++) {
-                $counter->addDay();
-                if ($this->isHoliday($counter->toImmutable())) {
-                    continue;
-                }
-
-                if ($i === 1 and $this->isAfterTime($datetime, 22, 00) and in_array(
-                        $datetime->addDay()->dayOfWeek,
-                        [
-                            CarbonImmutable::TUESDAY,
-                            CarbonImmutable::THURSDAY,
-                            CarbonImmutable::SATURDAY,
-                        ]
-                    )) {
-                    continue;
-                }
-
-                if (!in_array($counter->dayOfWeek, [
-                    CarbonImmutable::TUESDAY,
-                    CarbonImmutable::THURSDAY,
-                    CarbonImmutable::SATURDAY,
-                ])) {
-                    continue;
-                }
-                $deliverySlots[] = DeliverySlot::fromCarbon($counter);
-            }
+            $allowedDays = [Carbon::TUESDAY, Carbon::THURSDAY, Carbon::SATURDAY];
+            $timeThreshold = CarbonImmutable::createFromTime(22, 00);
+            $skipNextDayIfTimeAfter = $allowedDays;
         } else {
             throw new CityWithUndefinedScenarioException();
         }
 
-        return new DeliverySlotsCollection(...$deliverySlots);
+        for ($i = 1; $i <= 21; $i++) {
+            $currentDate = $datetime->addDays($i);
+            $currentDayOfWeek = $currentDate->dayOfWeekIso;
+
+            if ($i === 1 && in_array($currentDayOfWeek, $skipNextDayIfTimeAfter)) {
+                if ($this->isAfterTime($currentDate, $timeThreshold)) {
+                    continue;
+                }
+            }
+
+            if ($this->isHoliday($currentDate)) {
+                continue;
+            }
+
+            if (!in_array($currentDayOfWeek, $allowedDays)) {
+                continue;
+            }
+
+            $availableSlots[] = DeliverySlot::fromCarbon($currentDate);
+        }
+
+        return new DeliverySlotsCollection(...$availableSlots);
     }
 
     protected function isHoliday(CarbonImmutable $datetime): bool
@@ -87,8 +62,8 @@ class DeliverySlotsService
         return in_array($datetime->format('d.m'), self::HOLIDAYS);
     }
 
-    protected function isAfterTime(CarbonImmutable $datetime, int $hours, int $minutes): bool
+    protected function isAfterTime(CarbonImmutable $datetime, CarbonImmutable $time): bool
     {
-        return $datetime->gt($datetime->setTime($hours, $minutes));
+        return $datetime->gt($datetime->setTime($time->hour, $time->minute));
     }
 }
